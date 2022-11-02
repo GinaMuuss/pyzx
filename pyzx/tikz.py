@@ -77,10 +77,13 @@ def _to_tikz(g: BaseGraph[VT,ET], draw_scalar:bool = False,
         if (ty == VertexType.H_BOX and p == 1) or (ty != VertexType.H_BOX and p == 0):
             phase = ""
         else:
-            ns = '' if p.numerator == 1 else str(p.numerator)
-            dn = '' if p.denominator == 1 else str(p.denominator)
-            if dn: phase = r"$\frac{%s\pi}{%s}$" % (ns, dn)
-            else: phase = r"$%s\pi$" % ns
+            if hasattr(p, "numerator"):
+                ns = '' if p.numerator == 1 else str(p.numerator)
+                dn = '' if p.denominator == 1 else str(p.denominator)
+                if dn: phase = r"$\frac{%s\pi}{%s}$" % (ns, dn)
+                else: phase = r"$%s\pi$" % ns
+            else:
+                phase = str(p)
         x = g.row(v) + xoffset
         y = - g.qubit(v) - yoffset
         s = "        \\node [style={}] ({:d}) at ({:.2f}, {:.2f}) {{{:s}}};".format(style,v+idoffset,x,y,phase) # type: ignore

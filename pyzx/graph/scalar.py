@@ -18,6 +18,7 @@
 
 import math
 import cmath
+import sympy
 import copy
 from fractions import Fraction
 from typing import List
@@ -154,7 +155,9 @@ class Scalar(object):
 
     def to_json(self) -> str:
         d = {"power2": self.power2, "phase": str(self.phase)}
-        if abs(self.floatfactor - 1) > 0.00001:
+        if len(sympy.sympify(self.floatfactor).free_symbols) > 0 :
+            d["floatfactor"] =  str(self.floatfactor)
+        elif abs(self.floatfactor - 1) > 0.00001:
             d["floatfactor"] =  self.floatfactor
         if self.phasenodes:
             d["phasenodes"] = [str(p) for p in self.phasenodes]
@@ -209,6 +212,10 @@ class Scalar(object):
         # These if statements look quite arbitrary, but they are just calculations of the scalar
         # of a pair of connected single wire spiders of opposite colors.
         # We make special cases for Clifford phases and pi/4 phases.
+        if len(sympy.simplify(p1).free_symbols) > 0 or len(sympy.simplify(p2).free_symbols) > 0: #TODO: an ugly bodge, but probably needed
+            self.add_power(-1)
+            self.add_float(1+sympy.exp(p1)+sympy.exp(p2) - sympy.exp(p1+p2))
+            return
         if p2 in (0,1):
             p1,p2 = p2, p1
         if p1 == 0:
