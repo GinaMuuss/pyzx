@@ -16,7 +16,7 @@
 
 from fractions import Fraction
 from typing import Tuple, Dict, Set, Any
-
+import sympy
 from .base import BaseGraph
 
 from ..utils import VertexType, EdgeType, FractionLike, FloatInt
@@ -252,7 +252,10 @@ class GraphS(BaseGraph[int,Tuple[int,int]]):
     def add_to_phase(self, vertex, phase):
         old_phase = self._phase.get(vertex, Fraction(1))
         try:
-            self._phase[vertex] = (old_phase + Fraction(phase)) % 2
+            if len(sympy.sympify((old_phase + Fraction(phase))).free_symbols) > 0:
+                self._phase[vertex] = (old_phase + Fraction(phase)) #TODO: remove once the issue with sympy doing incorrect stuff is resolved. Mod(4*(Mod(-phi, 1)), 2)
+            else:
+                self._phase[vertex] = (old_phase + Fraction(phase)) % 2
         except Exception:
             self._phase[vertex] = old_phase + phase
     def qubit(self, vertex):
