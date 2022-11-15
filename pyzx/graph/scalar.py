@@ -217,7 +217,15 @@ class Scalar(object):
         # We make special cases for Clifford phases and pi/4 phases.
         if len(sympy.simplify(p1).free_symbols) > 0 or len(sympy.simplify(p2).free_symbols) > 0: #TODO: an ugly bodge, but probably needed
             self.add_power(-1)
-            self.add_float(1+sympy.exp(p1)+sympy.exp(p2) - sympy.exp(p1+p2))
+            phase_1 = sympy.simplify( sympy.pi * sympy.I*p1)
+            phase_2 = sympy.simplify( sympy.pi * sympy.I*p2)
+            phase_both = sympy.simplify( sympy.pi * sympy.I*(p1+p2))
+            print("adding phases\n", phase_1,"\n", phase_2, phase_both)
+            a = 1+sympy.exp(phase_1)+sympy.exp(phase_2) - sympy.exp(phase_both)
+            print("sum is", a)
+            b = sympy.simplify(a)
+            print("sum is simplified", b)
+            self.add_float(b) 
             return
         if p2 in (0,1):
             p1,p2 = p2, p1

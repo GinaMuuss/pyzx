@@ -46,27 +46,27 @@ TensorConvertible = Union[np.ndarray, 'Circuit', 'BaseGraph']
 def Z_to_tensor(arity: int, phase: float) -> np.ndarray:
     m = np.zeros([2]*arity, dtype = complex)
     if arity == 0:
-        m[()] = 1 + np.exp(1j*phase)
+        m[()] = 1 + np.exp(1j*complex(phase))
         return m
     m[(0,)*arity] = 1
-    m[(1,)*arity] = np.exp(1j*phase)
+    m[(1,)*arity] = np.exp(1j*complex(phase))
     return m
 
 def X_to_tensor(arity: int, phase: float) -> np.ndarray:
     m = np.ones(2**arity, dtype = complex)
     if arity == 0:
-        m[()] = 1 + np.exp(1j*phase)
+        m[()] = 1 + np.exp(1j*complex(phase))
         return m
     for i in range(2**arity):
         if bin(i).count("1")%2 == 0: 
-            m[i] += np.exp(1j*phase)
+            m[i] += np.exp(1j*complex(phase))
         else:
-            m[i] -= np.exp(1j*phase)
+            m[i] -= np.exp(1j*complex(phase))
     return np.power(np.sqrt(0.5),arity)*m.reshape([2]*arity)
 
 def H_to_tensor(arity: int, phase: float) -> np.ndarray:
     m = np.ones(2**arity, dtype = complex)
-    if phase != 0: m[-1] = np.exp(1j*phase)
+    if phase != 0: m[-1] = np.exp(1j*complex(phase))
     return m.reshape([2]*arity)
 
 def pop_and_shift(verts, indices):
@@ -157,7 +157,7 @@ def tensorfy(g: 'BaseGraph[VT,ET]', preserve_scalar:bool=True) -> np.ndarray:
         perm.append(i)
 
     tensor = np.transpose(tensor,perm)
-    if preserve_scalar: tensor *= g.scalar.to_number()
+    if preserve_scalar: tensor *= complex(g.scalar.to_number())
     return tensor
 
 def tensor_to_matrix(t: np.ndarray, inputs: int, outputs: int) -> np.ndarray:
