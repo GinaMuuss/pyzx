@@ -20,6 +20,7 @@ import math
 import cmath
 import sympy
 import copy
+import sympy
 from fractions import Fraction
 from typing import List
 import json
@@ -108,7 +109,9 @@ class Scalar(object):
             f *= -1
 
         s = "$"
-        if abs(f+1) < 0.001: #f \approx -1
+        if len(sympy.sympify(f).free_symbols) > 0:
+            s += sympy.latex(f) 
+        elif abs(f+1) < 0.001: #f \approx -1
             s += "-"
         elif abs(f-1) > 0.0001: #f \neq 1
             s += str(self.floatfactor)
